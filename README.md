@@ -68,6 +68,7 @@ src/main/resources/
    - Google Sheets API
    - Cloud Run API
    - Artifact Registry API
+   - Cloud Build API(Cloud Run の継続的デプロイで使用)
 2. アプリ用のサービスアカウントを作成する。
 3. 作成したスプレッドシートを「共有」から、サービスアカウントのメールアドレス（例: `xxx@yyy.iam.gserviceaccount.com`）に
    **編集者権限**で共有する（Sheets API の権限は IAM ロールではなく、このスプレッドシート共有設定で決まる）。
@@ -109,40 +110,28 @@ docker run -p 8080:8080 \
   user-registration-system
 ```
 
-## Cloud Run への手動デプロイ例
+## Cloud Run へのデプロイ
 
-```bash
-gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+Cloud Run コンソールの「リポジトリから継続的にデプロイする(Google Cloud Build を使用)」機能で、本リポジトリ(GitHub)の
+`main` ブランチと連携しています。`main` に push されるたびに Cloud Build が `Dockerfile` を自動ビルドし、Artifact Registry
+へ push した上で Cloud Run に自動デプロイされます。手動での `gcloud run deploy` やイメージの push は不要です。
 
-docker build -t asia-northeast1-docker.pkg.dev/PROJECT_ID/user-registration-system/app:latest .
-docker push asia-northeast1-docker.pkg.dev/PROJECT_ID/user-registration-system/app:latest
+Cloud Run サービス作成時の設定:
 
-gcloud run deploy user-registration-system \
-  --image=asia-northeast1-docker.pkg.dev/PROJECT_ID/user-registration-system/app:latest \
-  --region=asia-northeast1 \
-  --service-account=SERVICE_ACCOUNT_EMAIL \
-  --allow-unauthenticated
-```
+- リポジトリ: `shinichi-yoshida-16/add-user-system`(ブランチ: `^main$`)
+- ビルドタイプ: Dockerfile
+- リージョン: `asia-northeast1`
+- コンテナポート: `8080`
+- 実行サービスアカウント: スプレッドシートへの編集者アクセス権を持つサービスアカウント
+- 認証: 未認証の呼び出しを許可(アプリ内の Spring Security でログイン保護)
 
 このサービスアカウントは、ユーザがログイン・登録画面で入力した任意のスプレッドシートIDにアクセスできる必要があるため、
-利用が想定される各スプレッドシートに対して個別に共有設定（編集者権限）を行ってください。
+利用が想定される各スプレッドシートに対して個別に共有設定(編集者権限)を行ってください。
 
-## GitHub Actions による CI/CD
+## GitHub Actions による CI
 
-`.github/workflows/ci-cd.yml` は以下を行います。
-
-- すべての push / PR で `mvn clean verify`（ビルド・テスト）
-- `main` ブランチへの push 時に Docker イメージをビルドし、Artifact Registry へ push、Cloud Run へデプロイ
-
-以下の GitHub リポジトリシークレットを設定してください。
-
-| シークレット名 | 内容 |
-|---|---|
-| `GCP_PROJECT_ID` | GCP プロジェクト ID |
-| `GCP_SA_KEY` | デプロイ用サービスアカウントの JSON 鍵（Cloud Run 管理者・Artifact Registry 書き込み権限） |
-| `CLOUD_RUN_SERVICE_ACCOUNT` | Cloud Run 実行時に使う、スプレッドシートへアクセス権のあるサービスアカウントのメールアドレス |
-
-> セキュリティを高めたい場合は、JSON 鍵方式の代わりに Workload Identity Federation の利用を推奨します。
+`.github/workflows/ci-cd.yml` は、すべての push / PR で `mvn clean verify`(ビルド・テスト)のみを行います。
+デプロイは上記の Cloud Run 継続的デプロイ機能が担うため、このワークフローにはデプロイ処理を含めていません。
 
 ## 既知の制約
 
