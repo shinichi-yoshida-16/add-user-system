@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: user-registration-system
+  thymeleaf:
+    cache: false
+
+app:
+  name: user-registration-system
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: INFO
+    com.fcuro.userreg: DEBUG
+    org.springframework.security: DEBUG

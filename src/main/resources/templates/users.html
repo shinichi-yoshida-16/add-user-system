@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザ一覧</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="list-container">
+    <h1>ユーザ管理システム</h1>
+    <h2>ユーザ一覧</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>メールアドレス</th>
+            <th>targetId</th>
+            <th>状態</th>
+            <th>権限</th>
+            <th>更新日時</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.targetId}"></td>
+            <td th:text="${user.retired} ? '退職済み' : '在籍中'"></td>
+            <td th:text="${user.admin} ? '管理者' : '一般'"></td>
+            <td th:text="${user.updatedAt}"></td>
+            <td>
+                <form th:action="@{'/users/' + ${user.allowId} + '/retired-flag'}" method="post">
+                    <input type="hidden" name="retired" th:value="${!user.retired}">
+                    <button type="submit" th:text="${user.retired} ? '退職を解除する' : '退職済みにする'"></button>
+                </form>
+                <form th:action="@{'/users/' + ${user.allowId} + '/admin-flag'}" method="post">
+                    <input type="hidden" name="admin" th:value="${!user.admin}">
+                    <button type="submit" th:text="${user.admin} ? '管理者権限を外す' : '管理者にする'"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/home}">ようこそページに戻る</a></p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">ログアウト</button>
+    </form>
+</div>
+</body>
+</html>

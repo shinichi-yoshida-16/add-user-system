@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザ登録</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="form-container">
+    <h1>ユーザ管理システム</h1>
+    <h2>ユーザ登録</h2>
+
+    <form th:action="@{/register}" th:object="${registrationForm}" method="post">
+        <label for="spreadsheetId">スプレッドシートID</label>
+        <input type="text" id="spreadsheetId" th:field="*{spreadsheetId}" required>
+        <p class="error" th:if="${#fields.hasErrors('spreadsheetId')}" th:errors="*{spreadsheetId}"></p>
+
+        <label for="sheetName">シート名</label>
+        <input type="text" id="sheetName" th:field="*{sheetName}" required>
+        <p class="error" th:if="${#fields.hasErrors('sheetName')}" th:errors="*{sheetName}"></p>
+
+        <label for="email">メールアドレス</label>
+        <input type="email" id="email" th:field="*{email}" required>
+        <p class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+        <label for="password">パスワード</label>
+        <input type="password" id="password" th:field="*{password}" required>
+        <p class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+        <label for="targetId">targetId（任意・通知メール連携用）</label>
+        <input type="text" id="targetId" th:field="*{targetId}">
+
+        <div class="checkbox-field">
+            <input type="checkbox" id="admin" th:field="*{admin}">
+            <label for="admin">管理者権限を付与する（adminFlag、ONの場合のみ本システムにログイン可能）</label>
+        </div>
+
+        <button type="submit">登録する</button>
+    </form>
+
+    <p><a th:href="@{/home}">ようこそページに戻る</a></p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">ログアウト</button>
+    </form>
+</div>
+</body>
+</html>

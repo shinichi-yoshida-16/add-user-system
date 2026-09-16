@@ -1,0 +1,25 @@
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Google service account keys (never commit)
+*serviceaccount*.json
+*service-account*.json
+credentials.json
+gcp-key.json
+
+# Env files
+.env

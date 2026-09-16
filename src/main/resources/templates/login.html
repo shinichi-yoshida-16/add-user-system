@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="form-container">
+    <h1>ユーザ管理システム</h1>
+    <h2>ログイン</h2>
+
+    <p class="message" th:if="${param.registered}">登録が完了しました。ログインしてください。</p>
+    <p class="message" th:if="${param.logout}">ログアウトしました。</p>
+    <p class="error" th:if="${disabled}">このアカウントは無効化されています。</p>
+    <p class="error" th:if="${serviceError}">スプレッドシートにアクセスできませんでした。スプレッドシートID・シート名と共有設定をご確認ください。</p>
+    <p class="error" th:if="${param.error != null and !disabled and !serviceError}">スプレッドシートID・シート名・メールアドレス・パスワードのいずれかが正しくありません。</p>
+
+    <form th:action="@{/login}" method="post">
+        <label for="spreadsheetId">スプレッドシートID</label>
+        <input type="text" id="spreadsheetId" name="spreadsheetId" required autofocus>
+
+        <label for="sheetName">シート名</label>
+        <input type="text" id="sheetName" name="sheetName" required>
+
+        <label for="username">メールアドレス</label>
+        <input type="email" id="username" name="username" required>
+
+        <label for="password">パスワード</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">ログイン</button>
+    </form>
+
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+        <button type="submit">ログアウト</button>
+    </form>
+</div>
+</body>
+</html>

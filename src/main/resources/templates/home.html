@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="form-container">
+    <h1>ユーザ管理システム</h1>
+    <h2>ようこそ</h2>
+    <p><span th:text="${email}"></span> さんでログイン中です。</p>
+
+    <p class="message" th:if="${registered}">ユーザ登録が完了しました。</p>
+
+    <p><a th:href="@{/register}">AllowListに新規ユーザーを登録する</a></p>
+    <p><a th:href="@{/users}">ユーザ一覧を見る</a></p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">ログアウト</button>
+    </form>
+</div>
+</body>
+</html>
